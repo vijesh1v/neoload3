@@ -1,18 +1,36 @@
-name: Neoload Test Execution
+name: Neoload Test Execution - Dev Branch
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - dev  # Automatically runs when you push code to the dev branch
+  workflow_dispatch: # Still allows you to run it manually
+
 jobs:
   run-neoload-test:
-    runs-on: self-hosted # Ensure your local runner is 'Active'
+    runs-on: neoload3 # Matches your active runner
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          ref: dev # Forces the checkout of the dev branch
 
-     
-      - name: Execute NeoLoad Scenario
+      - name: Execute NeoLoad Scenario & Generate Report
         shell: powershell
         run: |
           $neoloadPath = 'C:\Program Files\NeoLoad 9.1\bin\NeoLoadCmd.exe'
-          $projectPath = "$($env:GITHUB_WORKSPACE)\neoload3.nlp"
-          & $neoloadPath -project $projectPath -launch "scenario1" -noGUI
+          $projectPath = "${{ github.workspace }}\neoload3.nlp"
+          $reportPath = "${{ github.workspace }}\neoload-report"
+          
+          # Execute with the -report flag to create the results folder
+          & $neoloadPath -project $projectPath -launch "scenario1" -noGUI -report $reportPath
+          
+          # Zip the report folder so it can be handled by GitHub and Gmail
+          Compress-Archive -Path $reportPath -DestinationPath "${{ github.workspace }}\NeoLoad_Dev_Report.zip" -Force
+
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeoLoad-Dev-Report
+          path: ${{ github.workspace }}\NeoLoad_Dev_Report.zip
+
