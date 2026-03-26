@@ -2,48 +2,36 @@ name: Neoload Test Execution - Dev Branch
 on:
   push:
     branches:
-      - dev
-  workflow_dispatch:
+      - dev  # Automatically runs when you push code to the dev branch
+  workflow_dispatch: # Still allows you to run it manually
 
 jobs:
   run-neoload-test:
-    runs-on: neoload3 # Ensure your self-hosted runner is active
+    runs-on: neoload3 # Matches your active runner
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: dev
-
-      - name: Debug: List Files
-        shell: powershell
-        run: |
-          Write-Host "Current Directory: $(Get-Location)"
-          Get-ChildItem -Recurse | Select-Object FullName
+          ref: dev-poulation # Forces the checkout of the dev branch
 
       - name: Execute NeoLoad Scenario & Generate Report
         shell: powershell
         run: |
           $neoloadPath = 'C:\Program Files\NeoLoad 9.1\bin\NeoLoadCmd.exe'
+          $projectPath = "${{ github.workspace }}\neoload3.nlp"
+          $reportPath = "${{ github.workspace }}\neoload-report"
           
-          # Define absolute paths using the workspace variable
-          $projectPath = Join-Path $env:GITHUB_WORKSPACE "neoload3.nlp"
-          $reportPath = Join-Path $env:GITHUB_WORKSPACE "neoload-report"
-          $zipPath = Join-Path $env:GITHUB_WORKSPACE "NeoLoad_Report.zip"
-
-          Write-Host "Starting NeoLoad execution..."
+          # Execute with the -report flag to create the results folder
+          & $neoloadPath -project $projectPath -launch "scenario1" -noGUI -report $reportPath
           
-          # Added -duration 300 (5 mins) to prevent license lease errors for 'By Iteration' tests
-          & $neoloadPath -project "$projectPath" -launch "scenario1" -noGUI -report "$reportPath" -duration 300
+          # Zip the report folder so it can be handled by GitHub and Gmail
+          Compress-Archive -Path $reportPath -DestinationPath "${{ github.workspace }}\NeoLoad_Dev_Report.zip" -Force
 
-          # Check if the report folder was actually created
-          if (Test-Path $reportPath) {
-              Write-Host "Report generated successfully. Zipping folder..."
-              Compress-Archive -Path "$reportPath\*" -DestinationPath "$zipPath" -Force
-          } else {
-              Write-Error "NeoLoad failed to generate a report. Check the logs above for 'Issues detected'."
-              exit 1
-          }
+      - name: Upload Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeoLoad-Dev-Report
+          path: ${{ github.workspace }}\NeoLoad_Dev_Report.zip
 
-
-
+   
