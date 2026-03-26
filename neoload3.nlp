@@ -1,0 +1,14 @@
+# Project description file
+
+project.name=neoload3
+project.version=8.7
+project.original.version=8.7
+product.name=NeoLoad
+product.original.name=NeoLoad
+product.original.version=9.1.5
+project.is-open-test-settings-after-upload=false
+project.id=3b3bbb95-a41f-4af6-b9a0-d871fa3b2be4
+project.config.path=config.zip
+project.config.storage=ZIP
+team.server.enabled=true
+team.server.project=/vijesh1v/neoload3.git
