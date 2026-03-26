@@ -37,12 +37,6 @@
         <lg-address enabled="false" hostname="laptop-367uugab">
             <ip value="10.96.27.63"/>
         </lg-address>
-        <lg-address enabled="false" hostname="2409:40f3:2009:fbbb:9c9a:80f7:e961:37e">
-            <ip value="2409:40f3:2009:fbbb:9c9a:80f7:e961:37e"/>
-        </lg-address>
-        <lg-address enabled="false" hostname="2409:40f3:2009:fbbb:d556:1025:bbc7:8363">
-            <ip value="2409:40f3:2009:fbbb:d556:1025:bbc7:8363"/>
-        </lg-address>
         <lg-address enabled="false" hostname="fe80:0:0:0:c361:3c0f:2702:b867%wlan2">
             <ip value="fe80:0:0:0:c361:3c0f:2702:b867%wlan2"/>
         </lg-address>
