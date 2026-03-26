@@ -45,11 +45,5 @@ jobs:
               exit 1
           }
 
-      - name: Upload Report Artifact
-        if: always() # Upload even if the execution step failed (if zip exists)
-        uses: actions/upload-artifact@v4
-        with:
-          name: NeoLoad-Dev-Results
-          path: ${{ github.workspace }}\NeoLoad_Report.zip
-          if-no-files-found: warn
+
 
